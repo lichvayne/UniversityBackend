@@ -13,7 +13,6 @@ public interface UniversityRepository extends JpaRepository<University,Long> {
 
     List<University> findAllByNameAndAddress(String name, String address);
     List<University> findAllByName(String name);
-    List<University> findAllByNameAndCreateDate(String name, Date createDate);
     Optional<University> findById(Long id);
 
 }
