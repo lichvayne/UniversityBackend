@@ -1,9 +1,7 @@
 package com.example.universitybackend.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import com.example.universitybackend.record.RecordState;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -31,6 +29,8 @@ public abstract class AppEntity<ID extends Serializable> {
     @Temporal(TemporalType.TIMESTAMP)
     protected Date updatedDate;
 
-    @Column(updatable = true, name = "deleted")
-    protected boolean deleted = false;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "record_state")
+    protected RecordState recordState = RecordState.ACTIVE;
+
 }
