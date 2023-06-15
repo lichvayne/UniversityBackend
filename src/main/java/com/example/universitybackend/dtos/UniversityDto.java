@@ -12,6 +12,7 @@ import lombok.*;
 public class UniversityDto {
 
     private String name;
+
     private String address;
 
 }

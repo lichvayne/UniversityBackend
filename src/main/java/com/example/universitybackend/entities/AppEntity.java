@@ -6,9 +6,9 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.io.Serializable;
 import java.util.Date;
+
 
 @Getter
 @Setter
@@ -17,6 +17,7 @@ import java.util.Date;
 @ToString
 @EqualsAndHashCode
 @EntityListeners(AuditingEntityListener.class)
+@MappedSuperclass
 public abstract class AppEntity<ID extends Serializable> {
 
     @Column(updatable = false,name = "create_date")

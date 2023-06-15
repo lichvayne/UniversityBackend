@@ -1,155 +1,164 @@
 package com.example.universitybackend.services.impl;
 
-import com.example.universitybackend.dtos.ApiResponse;
 import com.example.universitybackend.dtos.StudentDto;
+import com.example.universitybackend.entities.Course;
 import com.example.universitybackend.entities.Student;
+import com.example.universitybackend.exception.EntityNotFoundException;
+import com.example.universitybackend.exception.InvalidPropertyException;
 import com.example.universitybackend.record.RecordState;
+import com.example.universitybackend.repositories.CourseRepository;
 import com.example.universitybackend.repositories.StudentRepository;
 import com.example.universitybackend.services.StudentService;
-import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
+    private final CourseRepository courseRepository;
 
     @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository) {
+    public StudentServiceImpl(StudentRepository studentRepository, CourseRepository courseRepository) {
         this.studentRepository = studentRepository;
+        this.courseRepository = courseRepository;
     }
 
     @Override
-    public ApiResponse getStudent(Long id) {
+    public Student getStudent(Long id) {
 
         if (id == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "id is null");
+            throw new InvalidPropertyException("Id Is Null");
+        }
+
+        if (id <= 0) {
+            throw new InvalidPropertyException("Id is Incorrect");
         }
 
         Optional<Student> student = studentRepository.findById(id);
 
         if (student.isPresent()) {
 
-            return new ApiResponse("Student", student.get());
+            return student.get();
 
         }
-        else return new ApiResponse().addError("Student not found", "Incorrect id");
+        else throw new EntityNotFoundException("Student With this ID not Found");
 
     }
 
     @Override
-    public ApiResponse getStudentByPersonalNo(String personalNo) {
-        if (personalNo == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "personalNo is null");
-        }
-
-        Optional<Student> student = studentRepository.findStudentByPersonalNo(personalNo);
-
-        if (student.isPresent()) {
-
-            return new ApiResponse("Student", student.get());
-
-        }
-        else return new ApiResponse().addError("Student not found", "Incorrect personalNo");
-    }
-
-    @Override
-    public ApiResponse getAllStudent() {
-
-        List<Student> studentsList = studentRepository.findAll();
-
-        return new ApiResponse().addData("Students List", studentsList);
-
-    }
-
-    @Override
-    public ApiResponse updateStudentName(Long id, String name) {
-
-        if (name == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "Name is Null");
-        }
-
-        if (id == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "Id is Null");
-        }
-
-        Optional<Student> student = studentRepository.findById(id);
-
-        if (student.isPresent()) {
-
-            student.get().setName(name);
-
-            Student save = studentRepository.save(student.get());
-
-            return new ApiResponse("Student Name update", save);
-
-        }
-        else return new ApiResponse().addError("Student not found", "Incorrect id");
-
-    }
-
-    @Override
-    public ApiResponse updateStudentLastName(Long id, String lastName) {
-        if (lastName == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "Name is Null");
-        }
-
-        if (id == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "Id is Null");
-        }
-
-        Optional<Student> student = studentRepository.findById(id);
-
-        if (student.isPresent()) {
-            student.get().setLastName(lastName);
-            Student save = studentRepository.save(student.get());
-
-            return new ApiResponse("Student lastname update", save);
-        }
-        else return new ApiResponse().addError("Student not found", "Incorrect id");
-
-    }
-
-    @Override
-    public ApiResponse updateStudentpersonalNo(Long id, String personalNo) {
+    public Student getStudentByPersonalNo(String personalNo) {
 
         if (personalNo == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "personalNo is Null");
+            throw new InvalidPropertyException("PersonalNo is Null");
+        }
+        if (personalNo.trim().length()!=11 || personalNo.trim().contains(" ")) {
+            throw new InvalidPropertyException("PersonalNo is Incorrect");
         }
 
+        Optional<Student> student = studentRepository.findStudentByPersonalNo(personalNo.trim());
+
+        if (student.isPresent()) {
+
+            return student.get();
+
+        }
+        else throw new EntityNotFoundException("Student With this ID not Found");
+    }
+
+    @Override
+    public List<Student> getAllStudent() {
+
+        return studentRepository.findAll();
+
+    }
+
+    @Override
+    @Transactional
+    public Student updateStudent(Long id, String name, String lastname, String personalNo, String address, String code) {
+
         if (id == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "Id is Null");
+            throw new InvalidPropertyException("Id is null");
+        }
+
+        if (id <= 0) {
+            throw new InvalidPropertyException("Id is Incorrect");
         }
 
         Optional<Student> student = studentRepository.findById(id);
 
         if (student.isPresent()) {
 
-            student.get().setPersonalNo(personalNo);
+            Student updateStudent = student.get();
 
-            Student save = studentRepository.save(student.get());
+            if(name != null && name.length() > 0 && !updateStudent.getName().equals(name)){
 
-            return new ApiResponse("Student lastname update", save);
+                updateStudent.setName(name);
+
+            }
+
+            if(lastname != null && lastname.length() > 0 && !updateStudent.getLastName().equals(lastname)){
+
+                updateStudent.setLastName(lastname);
+
+            }
+
+            if(address !=null && !updateStudent.getAddress().equals(address)){
+
+                updateStudent.setAddress(address);
+
+            }
+
+            if(code != null){
+
+                Optional<Course> course = courseRepository.findByCodeIgnoreCase(code);
+
+                if(course.isPresent()){
+
+                    Set<Course> courseSet = updateStudent.getCourses();
+
+                    courseSet.add(course.get());
+
+                    updateStudent.setCourses(courseSet);
+                    
+                }
+                else  throw  new EntityNotFoundException("Course With this code Doesn't Exists");
+
+            }
+
+            if(personalNo != null && personalNo.length() == 11 && !updateStudent.getPersonalNo().equals(personalNo)){
+
+                Optional<Student> checkStudent = studentRepository.findStudentByPersonalNo(personalNo);
+
+                if(checkStudent.isEmpty()){
+
+                    updateStudent.setLastName(lastname);
+
+                }
+
+            }
+
+            return updateStudent;
+
         }
-        else return new ApiResponse().addError("Student not found", "Incorrect id");
+        else throw new EntityNotFoundException("Student With this ID not Found");
 
     }
 
     @Override
-    public ApiResponse addStudent(StudentDto studentDto) {
+    public Student addStudent(StudentDto studentDto) {
 
         if (studentDto == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "Student is Null");
+            throw new InvalidPropertyException("Student Object is null");
         }
 
         if (studentDto.getPersonalNo() == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "Student personalNo is Null");
+            throw new InvalidPropertyException("Student Object's PersonalNo is null");
         }
 
         if (studentDto.getName() == null || studentDto.getLastName() == null) {
@@ -158,34 +167,34 @@ public class StudentServiceImpl implements StudentService {
 
             student.setRecordState(RecordState.DRAFT);
 
-            Student save = studentRepository.save(student);
+            return  studentRepository.save(student);
 
-            return new ApiResponse().addData("Student Draft", save);
         }
 
-        Student save = studentRepository.save(new Student(studentDto));
-
-        return new ApiResponse().addData("Student", save);
+        return studentRepository.save(new Student(studentDto));
 
     }
 
     @Override
-    public ApiResponse deleteStudent(Long id) {
+    public Student deleteStudent(Long id) {
         if (id == null) {
-            return new ApiResponse("Incorrect Parameter", "id is Null");
+            throw new InvalidPropertyException("Id is null");
+        }
+
+        if (id <= 0) {
+            throw new InvalidPropertyException("Id is Incorrect");
         }
 
         Optional<Student> student = studentRepository.findById(id);
 
-        if(student.isPresent()){
+        if (student.isPresent()) {
 
             student.get().setRecordState(RecordState.DELETED);
 
-            Student save = studentRepository.save(student.get());
+            return studentRepository.save(student.get());
 
-            return new ApiResponse().addData("Student deleted",save);
         }
-        else return new ApiResponse().addError("Student not found","Incorrect id");
+        else throw new EntityNotFoundException("Student With this ID not Found");
 
     }
 }

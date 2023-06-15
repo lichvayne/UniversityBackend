@@ -2,20 +2,21 @@ package com.example.universitybackend.dtos;
 
 import lombok.*;
 
+
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class StudentDto {
-
+public class CourseDto {
 
     private String name;
 
-    private String lastName;
+    private Byte semester;
 
-    private String personalNo;
+    private String description;
 
-    private String address;
+    private String code;
 
 }

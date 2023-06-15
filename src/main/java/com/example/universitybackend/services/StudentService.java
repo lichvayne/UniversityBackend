@@ -1,18 +1,22 @@
 package com.example.universitybackend.services;
 
-import com.example.universitybackend.dtos.ApiResponse;
 import com.example.universitybackend.dtos.StudentDto;
+import com.example.universitybackend.entities.Student;
 import com.example.universitybackend.record.RecordState;
+
+import java.util.List;
+
 
 public interface StudentService {
 
-    ApiResponse getStudent(Long id);
-    ApiResponse getStudentByPersonalNo(String personalNo);
-    ApiResponse getAllStudent();
-    ApiResponse updateStudentName(Long id, String name);
-    ApiResponse updateStudentLastName(Long id, String lastName);
-    ApiResponse updateStudentpersonalNo(Long id, String personalNo);
-    ApiResponse addStudent(StudentDto studentDto);
-    ApiResponse deleteStudent(Long id);
+    Student getStudent(Long id);
+    Student getStudentByPersonalNo(String personalNo);
+    List<Student> getAllStudent();
+
+    Student updateStudent(Long id, String name, String lastname, String personalNo, String address, String code);
+
+
+    Student addStudent(StudentDto studentDto);
+    Student deleteStudent(Long id);
 
 }

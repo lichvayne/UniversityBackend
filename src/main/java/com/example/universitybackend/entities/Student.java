@@ -1,9 +1,9 @@
 package com.example.universitybackend.entities;
 
 import com.example.universitybackend.dtos.StudentDto;
-import com.example.universitybackend.record.RecordState;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -28,6 +28,13 @@ public class Student extends AppEntity<Long>{
     @Column(name = "last_name",nullable = true)
     private String lastName;
 
+    @Column(name = "address",nullable = true)
+    private String address;
+
+
+    @ManyToMany
+    Set<Course> courses;
+
     @ManyToOne
     private University university;
 
@@ -37,6 +44,7 @@ public class Student extends AppEntity<Long>{
         this.name = studentDto.getName();
         this.lastName = studentDto.getLastName();
         this.personalNo = studentDto.getPersonalNo();
+        this.address = studentDto.getAddress();
     }
 
 }

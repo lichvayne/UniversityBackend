@@ -1,56 +1,58 @@
 package com.example.universitybackend.controller;
 
-import com.example.universitybackend.dtos.ApiResponse;
-import com.example.universitybackend.dtos.StudentDto;
-import com.example.universitybackend.services.StudentService;
+import com.example.universitybackend.dtos.UniversityDto;
+import com.example.universitybackend.entities.University;
+import com.example.universitybackend.services.UniversityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@CrossOrigin
 @RestController
 public class UniversityController {
 
-    private final StudentService studentService;
-
+    private final UniversityService universityService;
     @Autowired
-    public UniversityController(StudentService studentService) {
-        this.studentService = studentService;
+    public UniversityController(UniversityService universityService) {
+        this.universityService = universityService;
     }
 
-    @GetMapping("/api/students")
-    public ResponseEntity<ApiResponse> getStudentAll(){
-        return new ResponseEntity<>(studentService.getAllStudent(), HttpStatus.ACCEPTED);
+    @GetMapping("/api/universities")
+    public ResponseEntity<List<University>> getAllUniversity(){
+
+        return new ResponseEntity<>(universityService.getUniversityAll(), HttpStatus.ACCEPTED);
+
     }
 
-    @GetMapping("/api/student/{id}")
-    public ResponseEntity<ApiResponse> getStudent(@PathVariable Long id){
-        return new ResponseEntity<>(studentService.getStudent(id), HttpStatus.ACCEPTED);
+    @GetMapping("/api/university/{id}")
+    public ResponseEntity<University> getUniversity(@PathVariable Long id){
+
+        return new ResponseEntity<>(universityService.getUniversity(id), HttpStatus.ACCEPTED);
+
     }
 
-    @GetMapping("/api/delete-student/{id}")
-    public ResponseEntity<ApiResponse> deleteStudentById(@PathVariable Long id){
-        return new ResponseEntity<>(studentService.deleteStudent(id), HttpStatus.ACCEPTED);
+    @DeleteMapping("/api/delete-university/{id}")
+    public ResponseEntity<University> deleteStudentById(@PathVariable Long id){
+
+        return new ResponseEntity<>(universityService.deleteUniversity(id), HttpStatus.ACCEPTED);
+
     }
 
-    @GetMapping("/api/add-student")
-    public ResponseEntity<ApiResponse> addStudent(@RequestBody StudentDto studentDto){
-        return new ResponseEntity<>(studentService.addStudent(studentDto), HttpStatus.ACCEPTED);
+    @PostMapping("/api/add-university")
+    public ResponseEntity<University> addStudent(@RequestBody UniversityDto universityDto){
+
+        return new ResponseEntity<>(universityService.addUniversity(universityDto), HttpStatus.ACCEPTED);
+
     }
 
-    @PutMapping("/api/update-student-name/{id}")
-    public ResponseEntity<ApiResponse> updateStudentName(@PathVariable Long id, @RequestBody String name){
-        return new ResponseEntity<>(studentService.updateStudentName(id,name), HttpStatus.ACCEPTED);
-    }
+    @PutMapping("/api/update-university/{id}")
+    public ResponseEntity<University> updateStudentLastName(@PathVariable Long id, @RequestParam(required = false) String name, @RequestParam(required = false) String address){
 
-    @PutMapping("/api/update-student-lastname/{id}")
-    public ResponseEntity<ApiResponse> updateStudentLastName(@PathVariable Long id, @RequestBody String lastName){
-        return new ResponseEntity<>(studentService.updateStudentName(id,lastName), HttpStatus.ACCEPTED);
-    }
+        return new ResponseEntity<>(universityService.updateUniversity(id,name,address), HttpStatus.ACCEPTED);
 
-    @PutMapping("/api/update-student-personalno/{id}")
-    public ResponseEntity<ApiResponse> updateStudentPersonalNo(@PathVariable Long id, @RequestBody String personalNo){
-        return new ResponseEntity<>(studentService.updateStudentName(id,personalNo), HttpStatus.ACCEPTED);
     }
 
 }

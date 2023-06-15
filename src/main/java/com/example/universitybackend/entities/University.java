@@ -1,11 +1,11 @@
 package com.example.universitybackend.entities;
 
 import com.example.universitybackend.dtos.UniversityDto;
-import com.example.universitybackend.record.RecordState;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -27,6 +27,9 @@ public class University extends AppEntity<Long> {
 
     @Column(nullable = true,name = "address")
     private String address;
+
+    @OneToMany
+    private List<Student> student;
 
     public University(UniversityDto dto) {
         this.name = dto.getName();

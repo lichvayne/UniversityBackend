@@ -1,12 +1,13 @@
 package com.example.universitybackend.services.impl;
 
-import com.example.universitybackend.dtos.ApiResponse;
 import com.example.universitybackend.dtos.UniversityDto;
-import com.example.universitybackend.entities.Student;
 import com.example.universitybackend.entities.University;
+import com.example.universitybackend.exception.EntityNotFoundException;
+import com.example.universitybackend.exception.InvalidPropertyException;
 import com.example.universitybackend.record.RecordState;
 import com.example.universitybackend.repositories.UniversityRepository;
 import com.example.universitybackend.services.UniversityService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,71 +25,61 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Override
-    public ApiResponse addUniversity(UniversityDto universityDto) {
+    public University addUniversity(UniversityDto universityDto) {
 
         if (universityDto == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "University is Null");
+            throw new InvalidPropertyException("University is Null");
         }
 
         if (universityDto.getName() == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "University name is Null");
+            throw new InvalidPropertyException("University name is Null");
         }
 
-        University save = universityRepository.save(new University(universityDto));
+        return universityRepository.save(new University(universityDto));
 
-        return new ApiResponse("university", save);
     }
 
-    @Override
-    public ApiResponse updateUniversityName(String name, Long id) {
-        if (name == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "Name is Null");
-        }
-
-        if (id == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "Id is Null");
-        }
-
-        Optional<University> university = universityRepository.findById(id);
-
-        if (university.isPresent()) {
-            university.get().setName(name);
-            University save = universityRepository.save(university.get());
-            return new ApiResponse("University name update", save);
-        } else {
-            return new ApiResponse().addError("University not found", "Incorrect id");
-        }
-    }
 
     @Override
-    public ApiResponse updateUniversityAddress(String address, Long id) {
-        if (address == null) {
-            return new ApiResponse("Incorrect Parameter", "Address is Null");
-        }
-
+    @Transactional
+    public University updateUniversity(Long id, String name, String address) {
         if (id == null) {
-            return new ApiResponse("Incorrect Parameter", "id is Null");
+            throw new InvalidPropertyException("id is Null");
         }
 
         Optional<University> university = universityRepository.findById(id);
 
         if (university.isPresent()) {
 
-            university.get().setAddress(address);
+            University updateUniversity = university.get();
 
-            University save = universityRepository.save(university.get());
+            if(name != null && name.length() >0 && !updateUniversity.getName().equals(name)){
 
-            return new ApiResponse("University address update", save);
+                updateUniversity.setName(name);
 
-        } else return new ApiResponse().addError("University not found", "Incorrect id");
+            }
+
+            if(address !=null && !updateUniversity.getAddress().equals(address)){
+
+                updateUniversity.setAddress(address);
+
+            }
+
+            return updateUniversity;
+
+        }
+        else throw new EntityNotFoundException("University with this Id doesn't exists");
 
     }
 
+
+
+
     @Override
-    public ApiResponse deleteUniversity(Long id) {
+    public University deleteUniversity(Long id) {
 
         if (id == null) {
-            return new ApiResponse("Incorrect Parameter", "id is Null");
+            throw new InvalidPropertyException("id is Null");
         }
 
         Optional<University> university = universityRepository.findById(id);
@@ -97,37 +88,35 @@ public class UniversityServiceImpl implements UniversityService {
 
             university.get().setRecordState(RecordState.DELETED);
 
-            University save = universityRepository.save(university.get());
+            return universityRepository.save(university.get());
 
-            return new ApiResponse().addData("University deleted",save);
         }
-        else return new ApiResponse().addError("University not found","Incorrect id");
+        else throw new EntityNotFoundException("University with this Id doesn't exists");
 
     }
 
     @Override
-    public ApiResponse getUniversity(Long id) {
+    public University getUniversity(Long id) {
 
         if (id == null) {
-            return new ApiResponse().addError("Incorrect Parameter", "id is null");
+            throw new InvalidPropertyException("id is null");
         }
 
         Optional<University> university = universityRepository.findById(id);
 
         if (university.isPresent()) {
-            return new ApiResponse("University", university.get());
-        }
-        else return new ApiResponse().addError("University not found", "Incorrect id");
 
+            return university.get();
+
+        }
+        else throw new EntityNotFoundException("University with this Id doesn't exists");
 
     }
 
     @Override
-    public ApiResponse getUniversityAll() {
+    public List<University> getUniversityAll() {
 
-        List<University> universityList = universityRepository.findAll();
-
-        return new ApiResponse("All University", universityList);
+        return universityRepository.findAll();
 
     }
 }
