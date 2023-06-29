@@ -1,20 +1,16 @@
-package com.example.universitybackend.entities;
+package com.example.universitybackend.entity;
 
-import com.example.universitybackend.dtos.UniversityDto;
+import com.example.universitybackend.dto.UniversityDto;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.List;
 
-
+@Entity
+@Table(name = "University")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@EqualsAndHashCode(callSuper = true)
-@Table(name = "University")
-@Entity
 public class University extends AppEntity<Long> {
 
     @Id

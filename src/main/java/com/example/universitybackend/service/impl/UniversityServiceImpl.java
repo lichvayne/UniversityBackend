@@ -1,12 +1,12 @@
-package com.example.universitybackend.services.impl;
+package com.example.universitybackend.service.impl;
 
-import com.example.universitybackend.dtos.UniversityDto;
-import com.example.universitybackend.entities.University;
+import com.example.universitybackend.dto.UniversityDto;
+import com.example.universitybackend.entity.University;
 import com.example.universitybackend.exception.EntityNotFoundException;
 import com.example.universitybackend.exception.InvalidPropertyException;
 import com.example.universitybackend.record.RecordState;
-import com.example.universitybackend.repositories.UniversityRepository;
-import com.example.universitybackend.services.UniversityService;
+import com.example.universitybackend.repository.UniversityRepository;
+import com.example.universitybackend.service.UniversityService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

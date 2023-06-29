@@ -1,4 +1,4 @@
-package com.example.universitybackend.dtos;
+package com.example.universitybackend.dto;
 
 import lombok.*;
 
@@ -6,11 +6,10 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class StudentDto {
 
 
-    private String name;
+    private String firstName;
 
     private String lastName;
 

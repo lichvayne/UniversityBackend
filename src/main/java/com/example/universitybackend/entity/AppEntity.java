@@ -1,4 +1,4 @@
-package com.example.universitybackend.entities;
+package com.example.universitybackend.entity;
 
 import com.example.universitybackend.record.RecordState;
 import jakarta.persistence.*;
@@ -14,8 +14,6 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@EqualsAndHashCode
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 public abstract class AppEntity<ID extends Serializable> {

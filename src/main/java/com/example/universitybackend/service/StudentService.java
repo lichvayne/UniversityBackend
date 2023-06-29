@@ -1,8 +1,7 @@
-package com.example.universitybackend.services;
+package com.example.universitybackend.service;
 
-import com.example.universitybackend.dtos.StudentDto;
-import com.example.universitybackend.entities.Student;
-import com.example.universitybackend.record.RecordState;
+import com.example.universitybackend.dto.StudentDto;
+import com.example.universitybackend.entity.Student;
 
 import java.util.List;
 

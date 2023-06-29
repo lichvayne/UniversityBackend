@@ -1,14 +1,14 @@
-package com.example.universitybackend.services.impl;
+package com.example.universitybackend.service.impl;
 
-import com.example.universitybackend.dtos.StudentDto;
-import com.example.universitybackend.entities.Course;
-import com.example.universitybackend.entities.Student;
+import com.example.universitybackend.dto.StudentDto;
+import com.example.universitybackend.entity.Course;
+import com.example.universitybackend.entity.Student;
 import com.example.universitybackend.exception.EntityNotFoundException;
 import com.example.universitybackend.exception.InvalidPropertyException;
 import com.example.universitybackend.record.RecordState;
-import com.example.universitybackend.repositories.CourseRepository;
-import com.example.universitybackend.repositories.StudentRepository;
-import com.example.universitybackend.services.StudentService;
+import com.example.universitybackend.repository.CourseRepository;
+import com.example.universitybackend.repository.StudentRepository;
+import com.example.universitybackend.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,56 +31,40 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student getStudent(Long id) {
-
         if (id == null) {
-            throw new InvalidPropertyException("Id Is Null");
+            throw new InvalidPropertyException("ID Is Null");
         }
 
         if (id <= 0) {
-            throw new InvalidPropertyException("Id is Incorrect");
+            throw new InvalidPropertyException("Invalid ID Supplied");
         }
 
         Optional<Student> student = studentRepository.findById(id);
-
-        if (student.isPresent()) {
-
-            return student.get();
-
-        }
-        else throw new EntityNotFoundException("Student With this ID not Found");
-
+        return student.orElseThrow(() -> new EntityNotFoundException("Student with this ID not found"));
     }
 
     @Override
     public Student getStudentByPersonalNo(String personalNo) {
-
         if (personalNo == null) {
             throw new InvalidPropertyException("PersonalNo is Null");
         }
-        if (personalNo.trim().length()!=11 || personalNo.trim().contains(" ")) {
+
+        if (personalNo.trim().length() != 11 || personalNo.trim().contains(" ")) {
             throw new InvalidPropertyException("PersonalNo is Incorrect");
         }
 
         Optional<Student> student = studentRepository.findStudentByPersonalNo(personalNo.trim());
-
-        if (student.isPresent()) {
-
-            return student.get();
-
-        }
-        else throw new EntityNotFoundException("Student With this ID not Found");
+        return student.orElseThrow(() -> new EntityNotFoundException("Student with this ID not found"));
     }
 
     @Override
     public List<Student> getAllStudent() {
-
         return studentRepository.findAll();
-
     }
 
     @Override
     @Transactional
-    public Student updateStudent(Long id, String name, String lastname, String personalNo, String address, String code) {
+    public Student updateStudent(Long id, String firstName, String lastName, String personalNo, String address, String code) {
 
         if (id == null) {
             throw new InvalidPropertyException("Id is null");
@@ -96,57 +80,62 @@ public class StudentServiceImpl implements StudentService {
 
             Student updateStudent = student.get();
 
-            if(name != null && name.length() > 0 && !updateStudent.getName().equals(name)){
+            if (updateStudent.getRecordState() == RecordState.DRAFT) {
 
-                updateStudent.setName(name);
-
-            }
-
-            if(lastname != null && lastname.length() > 0 && !updateStudent.getLastName().equals(lastname)){
-
-                updateStudent.setLastName(lastname);
+                updateStudent.setRecordState(RecordState.ACTIVE);
 
             }
 
-            if(address !=null && !updateStudent.getAddress().equals(address)){
+            if (firstName != null && firstName.length() > 0) {
+
+                updateStudent.setFirstName(firstName);
+
+            }
+
+            if (lastName != null && lastName.length() > 0) {
+
+                updateStudent.setLastName(lastName);
+
+            }
+
+            if (address != null) {
 
                 updateStudent.setAddress(address);
 
             }
 
-            if(code != null){
+            if (code != null) {
 
                 Optional<Course> course = courseRepository.findByCodeIgnoreCase(code);
 
-                if(course.isPresent()){
+                if (course.isPresent()) {
 
                     Set<Course> courseSet = updateStudent.getCourses();
 
                     courseSet.add(course.get());
 
                     updateStudent.setCourses(courseSet);
-                    
-                }
-                else  throw  new EntityNotFoundException("Course With this code Doesn't Exists");
+
+                } else throw new EntityNotFoundException("Course With this code Doesn't Exists");
 
             }
 
-            if(personalNo != null && personalNo.length() == 11 && !updateStudent.getPersonalNo().equals(personalNo)){
+            if (personalNo != null && personalNo.length() == 11) {
 
                 Optional<Student> checkStudent = studentRepository.findStudentByPersonalNo(personalNo);
 
-                if(checkStudent.isEmpty()){
+                if (checkStudent.isEmpty()) {
 
-                    updateStudent.setLastName(lastname);
+                    updateStudent.setLastName(lastName);
 
                 }
 
             }
 
+
             return updateStudent;
 
-        }
-        else throw new EntityNotFoundException("Student With this ID not Found");
+        } else throw new EntityNotFoundException("Student with this ID not found");
 
     }
 
@@ -161,14 +150,10 @@ public class StudentServiceImpl implements StudentService {
             throw new InvalidPropertyException("Student Object's PersonalNo is null");
         }
 
-        if (studentDto.getName() == null || studentDto.getLastName() == null) {
-
+        if (studentDto.getFirstName() == null || studentDto.getLastName() == null) {
             Student student = new Student(studentDto);
-
             student.setRecordState(RecordState.DRAFT);
-
-            return  studentRepository.save(student);
-
+            return studentRepository.save(student);
         }
 
         return studentRepository.save(new Student(studentDto));
@@ -178,23 +163,16 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student deleteStudent(Long id) {
         if (id == null) {
-            throw new InvalidPropertyException("Id is null");
+            throw new InvalidPropertyException("ID Is Null");
         }
 
         if (id <= 0) {
-            throw new InvalidPropertyException("Id is Incorrect");
+            throw new InvalidPropertyException("Invalid ID Supplied");
         }
 
         Optional<Student> student = studentRepository.findById(id);
-
-        if (student.isPresent()) {
-
-            student.get().setRecordState(RecordState.DELETED);
-
-            return studentRepository.save(student.get());
-
-        }
-        else throw new EntityNotFoundException("Student With this ID not Found");
+        student.ifPresent((value) -> student.get().setRecordState(RecordState.DELETED));
+        return student.orElseThrow(() -> new EntityNotFoundException("Student with this ID not found"));
 
     }
 }

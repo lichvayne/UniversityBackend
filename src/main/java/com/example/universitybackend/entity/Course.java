@@ -1,25 +1,22 @@
-package com.example.universitybackend.entities;
+package com.example.universitybackend.entity;
 
-import com.example.universitybackend.dtos.CourseDto;
+import com.example.universitybackend.dto.CourseDto;
 import jakarta.persistence.*;
 import lombok.*;
 
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-@ToString
+@Data
 @Entity
 @Table(name = "Course")
-public class Course extends AppEntity<Long>{
+@NoArgsConstructor
+@AllArgsConstructor
+public class Course extends AppEntity<Long> {
+
     @Id
-    @SequenceGenerator(name = "courseIdSec",sequenceName = "COURSE_ID_SEQ",allocationSize = 1)
-    @GeneratedValue(generator = "COURSE_ID_SEQ",strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "courseIdSec", sequenceName = "COURSE_ID_SEQ", allocationSize = 1)
+    @GeneratedValue(generator = "COURSE_ID_SEQ", strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "name",nullable = false,unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "semester")
@@ -31,9 +28,8 @@ public class Course extends AppEntity<Long>{
     @Column(name = "credits")
     private Byte credits = 6;
 
-    @Column(name = "code",nullable = false,unique = true)
+    @Column(name = "code", nullable = false, unique = true)
     private String code;
-
     public Course(CourseDto courseDto) {
         this.name = courseDto.getName();
         this.semester = courseDto.getSemester();

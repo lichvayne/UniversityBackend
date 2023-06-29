@@ -1,16 +1,14 @@
-package com.example.universitybackend.controller;
+package com.example.universitybackend.controller.api;
 
-import com.example.universitybackend.dtos.UniversityDto;
-import com.example.universitybackend.entities.University;
-import com.example.universitybackend.services.UniversityService;
+import com.example.universitybackend.dto.UniversityDto;
+import com.example.universitybackend.entity.University;
+import com.example.universitybackend.service.UniversityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
-@CrossOrigin
 @RestController
 public class UniversityController {
 

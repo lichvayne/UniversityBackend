@@ -1,19 +1,17 @@
-package com.example.universitybackend.services.impl;
+package com.example.universitybackend.service.impl;
 
-import com.example.universitybackend.dtos.CourseDto;
-import com.example.universitybackend.entities.Course;
+import com.example.universitybackend.dto.CourseDto;
+import com.example.universitybackend.entity.Course;
 import com.example.universitybackend.exception.EntityNotFoundException;
 import com.example.universitybackend.exception.InvalidPropertyException;
 import com.example.universitybackend.record.RecordState;
-import com.example.universitybackend.repositories.CourseRepository;
-import com.example.universitybackend.repositories.StudentRepository;
-import com.example.universitybackend.services.CourseService;
+import com.example.universitybackend.repository.CourseRepository;
+import com.example.universitybackend.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
-
 @Service
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
@@ -137,12 +135,11 @@ public class CourseServiceImpl implements CourseService {
     public Course getCourseByCode(String code) {
 
         if(code == null){
-
             throw new InvalidPropertyException("code is null");
-
         }
 
         Optional<Course> course = courseRepository.findByCodeIgnoreCase(code.trim());
+
 
         if(course.isPresent()){
 
