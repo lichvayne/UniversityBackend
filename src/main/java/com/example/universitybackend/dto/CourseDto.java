@@ -1,14 +1,11 @@
-package com.example.universitybackend.dtos;
+package com.example.universitybackend.dto;
 
 import lombok.*;
-
-
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class CourseDto {
 
     private String name;

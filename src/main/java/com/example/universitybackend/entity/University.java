@@ -1,20 +1,16 @@
-package com.example.universitybackend.entities;
+package com.example.universitybackend.entity;
 
-import com.example.universitybackend.dtos.UniversityDto;
+import com.example.universitybackend.dto.UniversityDto;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.Set;
 
-import java.util.List;
-
-
+@Entity
+@Table(name = "University")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@EqualsAndHashCode(callSuper = true)
-@Table(name = "University")
-@Entity
 public class University extends AppEntity<Long> {
 
     @Id
@@ -28,8 +24,14 @@ public class University extends AppEntity<Long> {
     @Column(nullable = true,name = "address")
     private String address;
 
-    @OneToMany
-    private List<Student> student;
+    @OneToMany(cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "course_id")
+    private Set<Course> course;
 
     public University(UniversityDto dto) {
         this.name = dto.getName();

@@ -1,4 +1,4 @@
-package com.example.universitybackend.entities;
+package com.example.universitybackend.entity;
 
 import com.example.universitybackend.record.RecordState;
 import jakarta.persistence.*;
@@ -9,13 +9,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serializable;
 import java.util.Date;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@EqualsAndHashCode
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 public abstract class AppEntity<ID extends Serializable> {
@@ -25,7 +22,7 @@ public abstract class AppEntity<ID extends Serializable> {
     @Temporal(TemporalType.TIMESTAMP)
     protected Date createDate;
 
-    @Column(updatable = true,name = "updated_date")
+    @Column(name = "updated_date")
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     protected Date updatedDate;

@@ -1,5 +1,4 @@
-package com.example.universitybackend.dtos;
-
+package com.example.universitybackend.dto;
 
 import lombok.*;
 
@@ -7,8 +6,6 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
-
 public class UniversityDto {
 
     private String name;

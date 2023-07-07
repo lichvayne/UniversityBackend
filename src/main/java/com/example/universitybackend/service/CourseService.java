@@ -1,9 +1,7 @@
-package com.example.universitybackend.services;
+package com.example.universitybackend.service;
 
-import com.example.universitybackend.dtos.CourseDto;
-import com.example.universitybackend.dtos.StudentDto;
-import com.example.universitybackend.entities.Course;
-
+import com.example.universitybackend.dto.CourseDto;
+import com.example.universitybackend.entity.Course;
 import java.util.List;
 
 
@@ -15,7 +13,7 @@ public interface CourseService {
 
     Course getCourseByName(String name);
 
-    Course updateCourse(Long id, String name, Byte semester, String description, String code, Byte credits);
+    Course updateCourse(Long id, String name, Byte semester, String description, String code, Byte credits, Long studentId);
 
     Course getCourseByCode(String code);
 

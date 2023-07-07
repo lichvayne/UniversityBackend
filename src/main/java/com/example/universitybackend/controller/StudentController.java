@@ -1,69 +1,56 @@
 package com.example.universitybackend.controller;
 
-import com.example.universitybackend.dtos.StudentDto;
-import com.example.universitybackend.entities.Student;
-import com.example.universitybackend.services.StudentService;
+import com.example.universitybackend.dto.StudentDto;
+import com.example.universitybackend.entity.Student;
+import com.example.universitybackend.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-@CrossOrigin()
-@RestController()
-public class StudentController {
 
+@RestController
+@RequestMapping("/api/student")
+public class StudentController {
     private final StudentService studentService;
 
     @Autowired
     public StudentController(StudentService studentService) {
-
         this.studentService = studentService;
-
     }
 
-    @GetMapping("/api/students")
-    public ResponseEntity<List<Student>> getStudentAll(){
-
-        return new ResponseEntity<>(studentService.getAllStudent(), HttpStatus.ACCEPTED);
-
+    @GetMapping
+    public ResponseEntity<List<Student>> getStudentAll() {
+        return new ResponseEntity<>(studentService.getAllStudent(), HttpStatus.OK);
     }
 
-    @GetMapping("/api/student/{id}")
-    public ResponseEntity<Student> getStudent(@PathVariable Long id){
-
-        return new ResponseEntity<>(studentService.getStudent(id), HttpStatus.ACCEPTED);
-
-    }
-    @GetMapping("/api/student/personalno/{personalNo}")
-    public ResponseEntity<Student> getStudentByPersonalNo(@PathVariable String personalNo){
-
-        return new ResponseEntity<>(studentService.getStudentByPersonalNo(personalNo), HttpStatus.ACCEPTED);
-
+    @GetMapping("{id}")
+    public ResponseEntity<Student> getStudent(@PathVariable Long id) {
+        return new ResponseEntity<>(studentService.getStudent(id), HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/delete-student/{id}")
-    public ResponseEntity<Student> deleteStudentById(@PathVariable Long id){
-
-        return new ResponseEntity<>(studentService.deleteStudent(id), HttpStatus.ACCEPTED);
-
+    @GetMapping("personalno/{personalNo}")
+    public ResponseEntity<Student> getStudentByPersonalNo(@PathVariable String personalNo) {
+        return new ResponseEntity<>(studentService.getStudentByPersonalNo(personalNo), HttpStatus.OK);
     }
 
-    @PostMapping("/api/add-student")
-    public ResponseEntity<Student> addStudent(@RequestBody StudentDto studentDto){
-
-        return new ResponseEntity<>(studentService.addStudent(studentDto), HttpStatus.ACCEPTED);
-
+    @DeleteMapping("{id}")
+    public ResponseEntity<Student> deleteStudentById(@PathVariable Long id) {
+        return new ResponseEntity<>(studentService.deleteStudent(id), HttpStatus.OK);
     }
 
-    @PutMapping("/api/update-student/{id}")
-    public ResponseEntity<Student> updateStudentLastName(@PathVariable Long id, @RequestParam(required = false) String name, @RequestParam(required = false) String lastName,
-                                                         @RequestParam(required = false) String personalNo, @RequestParam(required = false) String address,
-                                                         @RequestParam(required = false) String code) {
-
-        return new ResponseEntity<>(studentService.updateStudent(id,name,lastName,personalNo,address,code), HttpStatus.ACCEPTED);
-
+    @PostMapping
+    public ResponseEntity<Student> addStudent(@RequestBody StudentDto studentDto) {
+        return new ResponseEntity<>(studentService.addStudent(studentDto), HttpStatus.OK);
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity<Student> updateStudent(@PathVariable Long id,
+                                                 @RequestParam(required = false) String firstName,
+                                                 @RequestParam(required = false) String lastName,
+                                                 @RequestParam(required = false) String personalNo,
+                                                 @RequestParam(required = false) String address) {
+        return new ResponseEntity<>(studentService.updateStudent(id, firstName, lastName, personalNo, address), HttpStatus.OK);
+    }
 
 }
