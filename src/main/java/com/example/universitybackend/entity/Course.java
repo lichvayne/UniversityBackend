@@ -1,14 +1,17 @@
 package com.example.universitybackend.entity;
 
 import com.example.universitybackend.dto.CourseDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.Set;
 
-@Data
 @Entity
 @Table(name = "Course")
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Course extends AppEntity<Long> {
 
     @Id
@@ -28,8 +31,18 @@ public class Course extends AppEntity<Long> {
     @Column(name = "credits")
     private Byte credits = 6;
 
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "student_course",
+            joinColumns = @JoinColumn(name = "course_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private Set<Student> students;
+
     @Column(name = "code", nullable = false, unique = true)
     private String code;
+
     public Course(CourseDto courseDto) {
         this.name = courseDto.getName();
         this.semester = courseDto.getSemester();

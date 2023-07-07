@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 public class StudentDto {
 
-
     private String firstName;
 
     private String lastName;

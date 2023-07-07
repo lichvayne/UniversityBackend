@@ -3,7 +3,7 @@ package com.example.universitybackend.entity;
 import com.example.universitybackend.dto.UniversityDto;
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "University")
@@ -24,8 +24,14 @@ public class University extends AppEntity<Long> {
     @Column(nullable = true,name = "address")
     private String address;
 
-    @OneToMany
-    private List<Student> student;
+    @OneToMany(cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "course_id")
+    private Set<Course> course;
 
     public University(UniversityDto dto) {
         this.name = dto.getName();

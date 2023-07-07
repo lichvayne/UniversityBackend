@@ -12,8 +12,7 @@ public interface StudentService {
     Student getStudentByPersonalNo(String personalNo);
     List<Student> getAllStudent();
 
-    Student updateStudent(Long id, String name, String lastname, String personalNo, String address, String code);
-
+    Student updateStudent(Long id, String name, String lastname, String personalNo, String address);
 
     Student addStudent(StudentDto studentDto);
     Student deleteStudent(Long id);

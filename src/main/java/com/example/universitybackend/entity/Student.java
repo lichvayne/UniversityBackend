@@ -1,12 +1,12 @@
 package com.example.universitybackend.entity;
 
-import com.example.universitybackend.dto.StudentDto;
+import com.example.universitybackend.dto.StudentDto;;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Set;
 
-@Table(name = "Student")
 @Entity
+@Table(name = "Student")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,10 +29,16 @@ public class Student extends AppEntity<Long>{
     @Column(name = "address",nullable = true)
     private String address;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "students",fetch = FetchType.LAZY)
     Set<Course> courses;
 
-    @ManyToOne
+
+    @ManyToOne(cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
     private University university;
 
     public Student(StudentDto studentDto){

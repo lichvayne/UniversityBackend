@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serializable;
 import java.util.Date;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,7 +22,7 @@ public abstract class AppEntity<ID extends Serializable> {
     @Temporal(TemporalType.TIMESTAMP)
     protected Date createDate;
 
-    @Column(updatable = true,name = "updated_date")
+    @Column(name = "updated_date")
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     protected Date updatedDate;

@@ -1,17 +1,14 @@
-package com.example.universitybackend.exception.response;
+package com.example.universitybackend.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 
-
 @Getter
 @Setter
-@NoArgsConstructor
-public class ApiErrorResponse {
+public class ErrorResponse {
 
     private HttpStatus status;
 
@@ -22,11 +19,10 @@ public class ApiErrorResponse {
 
     private String message;
 
-
-    public ApiErrorResponse(HttpStatus status, LocalDateTime timestamp, String message) {
+    public ErrorResponse(HttpStatus status, String message) {
         this.status = status;
         this.code = status.value();
-        this.timestamp = timestamp;
+        this.timestamp = LocalDateTime.now();
         this.message = message;
     }
 
