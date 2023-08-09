@@ -12,9 +12,10 @@ public interface StudentService {
     Student getStudentByPersonalNo(String personalNo);
     List<Student> getAllStudent();
 
-    Student updateStudent(Long id, String name, String lastname, String personalNo, String address);
+    Student updateStudent(Long id, String name, String lastname, String personalNo, String address, Long courseId);
 
     Student addStudent(StudentDto studentDto);
     Student deleteStudent(Long id);
+
 
 }

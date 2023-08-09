@@ -1,21 +1,25 @@
 package com.example.universitybackend.service.impl;
 
 import com.example.universitybackend.dto.UniversityDto;
+import com.example.universitybackend.entity.Student;
 import com.example.universitybackend.entity.University;
 import com.example.universitybackend.exception.EntityNotFoundException;
 import com.example.universitybackend.exception.InvalidPropertyException;
-import com.example.universitybackend.record.RecordState;
+import com.example.universitybackend.enums.RecordState;
 import com.example.universitybackend.repository.StudentRepository;
 import com.example.universitybackend.repository.UniversityRepository;
 import com.example.universitybackend.service.UniversityService;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
+@Slf4j
 public class UniversityServiceImpl implements UniversityService {
 
     private final UniversityRepository universityRepository;
@@ -37,6 +41,7 @@ public class UniversityServiceImpl implements UniversityService {
         }
 
         University university = new University(universityDto);
+        log.info("Added University: {}", university);
         return universityRepository.save(university);
     }
 
@@ -56,12 +61,15 @@ public class UniversityServiceImpl implements UniversityService {
             if (address != null && !updateUniversity.getAddress().equals(address)) {
                 updateUniversity.setAddress(address);
             }
-//            if (studentId != null && studentId > 0 && studentRepository.findById(studentId).isPresent()) {
-//                updateUniversity.getStudent().add(studentRepository.findById(studentId).get());
-//                List<Student>  list = updateUniversity.getStudent();
-//                list.add(studentRepository.findById(studentId).get());
-//                updateUniversity.setStudent(list);
-//            }
+            if (studentId != null && studentId > 0) {
+                studentRepository.findById(studentId).ifPresent(studentToAssign -> {
+                    Set<Student> studentSet = updateUniversity.getStudents();
+                    studentSet.add(studentToAssign);
+                    updateUniversity.setStudents(studentSet);
+                });
+            }
+            universityRepository.save(updateUniversity);
+            log.info("Updated university: {}", updateUniversity);
         });
 
         return university.orElseThrow(() -> new EntityNotFoundException("University With This Id Not Found"));
@@ -74,7 +82,10 @@ public class UniversityServiceImpl implements UniversityService {
         }
 
         Optional<University> university = universityRepository.findById(id);
-        university.ifPresent(deleteUniversity -> deleteUniversity.setRecordState(RecordState.DELETED));
+        university.ifPresent(deleteUniversity -> {
+            deleteUniversity.setRecordState(RecordState.DELETED);
+            log.info("Deleted university: {}", deleteUniversity);
+        });
 
         return university.orElseThrow(() -> new EntityNotFoundException("University With This Id Not Found"));
     }
@@ -86,11 +97,13 @@ public class UniversityServiceImpl implements UniversityService {
         }
 
         Optional<University> university = universityRepository.findById(id);
+        university.ifPresent(universityToLog -> log.info("Fetched university: {}", universityToLog));
         return university.orElseThrow(() -> new EntityNotFoundException("University With This Id Not Found"));
     }
 
     @Override
     public List<University> getUniversityAll() {
+        log.info("Fetched All University");
         return universityRepository.findAll();
     }
 }

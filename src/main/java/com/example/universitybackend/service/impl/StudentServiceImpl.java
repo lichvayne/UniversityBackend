@@ -1,27 +1,28 @@
 package com.example.universitybackend.service.impl;
 
 import com.example.universitybackend.dto.StudentDto;
+import com.example.universitybackend.entity.Course;
 import com.example.universitybackend.entity.Student;
 import com.example.universitybackend.exception.EntityNotFoundException;
 import com.example.universitybackend.exception.InvalidPropertyException;
-import com.example.universitybackend.record.RecordState;
+import com.example.universitybackend.enums.RecordState;
 import com.example.universitybackend.repository.CourseRepository;
 import com.example.universitybackend.repository.StudentRepository;
 import com.example.universitybackend.service.StudentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
-
-    @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
-    }
+    private final CourseRepository courseRepository;
 
     @Override
     public Student getStudent(Long id) {
@@ -31,9 +32,9 @@ public class StudentServiceImpl implements StudentService {
         if (id <= 0) {
             throw new InvalidPropertyException("Invalid ID Supplied");
         }
-
-        return studentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Student With This ID Not Found"));
+        Optional<Student> student = studentRepository.findById(id);
+        student.ifPresent(studentToLog -> log.info("Fetched student : {}", studentToLog));
+        return student.orElseThrow(() -> new EntityNotFoundException("Student With This ID Not Found"));
     }
 
     @Override
@@ -44,19 +45,19 @@ public class StudentServiceImpl implements StudentService {
         if (personalNo.length() != 11 || personalNo.contains(" ")) {
             throw new InvalidPropertyException("Invalid Personal No Supplied");
         }
-
-        return studentRepository.findStudentByPersonalNo(personalNo)
-                .orElseThrow(() -> new EntityNotFoundException("Student With This ID Not Found"));
+        Optional<Student> student = studentRepository.findStudentByPersonalNo(personalNo);
+        student.ifPresent(studentToLog -> log.info("Fetched student : {}", studentToLog));
+        return student.orElseThrow(() -> new EntityNotFoundException("Student With This ID Not Found"));
     }
 
     @Override
     public List<Student> getAllStudent() {
+        log.info("All Students Fetched");
         return studentRepository.findAll();
     }
 
     @Override
-    @Transactional
-    public Student updateStudent(Long id, String firstName, String lastName, String personalNo, String address) {
+    public Student updateStudent(Long id, String firstName, String lastName, String personalNo, String address, Long courseId) {
         if (id == null) {
             throw new InvalidPropertyException("ID Is Null");
         }
@@ -81,6 +82,15 @@ public class StudentServiceImpl implements StudentService {
             if (personalNo != null && personalNo.length() == 11 && studentRepository.findStudentByPersonalNo(personalNo).isEmpty()) {
                 updateStudent.setPersonalNo(personalNo);
             }
+            if (courseId != null && courseId >= 0) {
+                courseRepository.findById(courseId).ifPresent(course -> {
+                    Set<Course> courseList = updateStudent.getCourses();
+                    courseList.add(course);
+                    updateStudent.setCourses(courseList);
+                });
+            }
+            studentRepository.save(updateStudent);
+            log.info("Updated student : {}", updateStudent);
         });
 
         return student.orElseThrow(() -> new EntityNotFoundException("Student With This ID Not Found"));
@@ -99,6 +109,7 @@ public class StudentServiceImpl implements StudentService {
         if (studentDto.getFirstName() == null || studentDto.getLastName() == null) {
             student.setRecordState(RecordState.DRAFT);
         }
+        log.info("Added student : {}", student);
 
         return studentRepository.save(new Student(studentDto));
     }
@@ -113,7 +124,10 @@ public class StudentServiceImpl implements StudentService {
         }
 
         Optional<Student> student = studentRepository.findById(id);
-        student.ifPresent((deleteStudent) -> deleteStudent.setRecordState(RecordState.DELETED));
+        student.ifPresent((deleteStudent) -> {
+            deleteStudent.setRecordState(RecordState.DELETED);
+            log.info("Student Deleted : {}", deleteStudent);
+        });
 
         return student.orElseThrow(() -> new EntityNotFoundException("Student With This ID Not Found"));
     }

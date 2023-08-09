@@ -1,4 +1,4 @@
-package com.example.universitybackend.exception;
+package com.example.universitybackend.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;

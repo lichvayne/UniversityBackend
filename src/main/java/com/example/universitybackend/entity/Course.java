@@ -1,25 +1,36 @@
 package com.example.universitybackend.entity;
 
 import com.example.universitybackend.dto.CourseDto;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.Set;
 
 @Entity
 @Table(name = "Course")
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Course extends AppEntity<Long> {
-
     @Id
-    @SequenceGenerator(name = "courseIdSec", sequenceName = "COURSE_ID_SEQ", allocationSize = 1)
-    @GeneratedValue(generator = "COURSE_ID_SEQ", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(
+            name = "courseIdSec",
+            sequenceName = "COURSE_ID_SEQ",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            generator = "COURSE_ID_SEQ",
+            strategy = GenerationType.SEQUENCE
+    )
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(
+            name = "name",
+            nullable = false,
+            unique = true
+    )
     private String name;
 
     @Column(name = "semester")
@@ -31,16 +42,14 @@ public class Course extends AppEntity<Long> {
     @Column(name = "credits")
     private Byte credits = 6;
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "student_course",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
+    @ManyToMany(cascade = CascadeType.ALL)
     private Set<Student> students;
 
-    @Column(name = "code", nullable = false, unique = true)
+    @Column(
+            name = "code",
+            nullable = false,
+            unique = true
+    )
     private String code;
 
     public Course(CourseDto courseDto) {

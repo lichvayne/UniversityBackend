@@ -4,17 +4,20 @@ import com.example.universitybackend.dto.CourseDto;
 import com.example.universitybackend.entity.Course;
 import com.example.universitybackend.exception.EntityNotFoundException;
 import com.example.universitybackend.exception.InvalidPropertyException;
-import com.example.universitybackend.record.RecordState;
+import com.example.universitybackend.enums.RecordState;
 import com.example.universitybackend.repository.CourseRepository;
 import com.example.universitybackend.repository.StudentRepository;
 import com.example.universitybackend.service.CourseService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final StudentRepository studentRepository;
@@ -27,6 +30,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Course> getAllCourse() {
+        log.info("All Courses Fetched");
         return courseRepository.findAll();
     }
 
@@ -38,8 +42,8 @@ public class CourseServiceImpl implements CourseService {
         if (id <= 0) {
             throw new InvalidPropertyException("Id is Incorrect");
         }
-
         Optional<Course> course = courseRepository.findById(id);
+        course.ifPresent( courseToLog -> log.info("Fetched course : {}", courseToLog));
         return course.orElseThrow(() -> new EntityNotFoundException("Course With This ID Not Found"));
     }
 
@@ -50,7 +54,8 @@ public class CourseServiceImpl implements CourseService {
         }
 
         Optional<Course> course = courseRepository.findByNameIgnoreCase(name.trim());
-        return course.orElseThrow(() -> new EntityNotFoundException("Course With This ID Not Found"));
+        course.ifPresent( courseToLog -> log.info("Fetched course : {}", courseToLog));
+        return course.orElseThrow(() -> new EntityNotFoundException("Course With This Name Not Found"));
     }
 
     @Override
@@ -83,6 +88,7 @@ public class CourseServiceImpl implements CourseService {
             if (code != null && code.length() > 0 && !updateCourse.getCode().equals(code) && courseRepository.findByCodeIgnoreCase(code).isEmpty()) {
                 updateCourse.setCode(code);
             }
+            log.info("Updated Course: {}", updateCourse);
         });
 
         return course.orElseThrow(() -> new EntityNotFoundException("Course With This ID Not Found"));
@@ -95,6 +101,7 @@ public class CourseServiceImpl implements CourseService {
         }
 
         Optional<Course> course = courseRepository.findByCodeIgnoreCase(code.trim());
+        course.ifPresent( courseToLog -> log.info("Fetched course : {}", courseToLog));
         return course.orElseThrow(() -> new EntityNotFoundException("Course With This ID Not Found"));
     }
 
@@ -103,8 +110,8 @@ public class CourseServiceImpl implements CourseService {
         if (courseDto == null) {
             throw new InvalidPropertyException("Course Object Is Null");
         }
-
         Course course = new Course(courseDto);
+        log.info("New Course Added : {}",course);
         return courseRepository.save(course);
     }
 
@@ -118,7 +125,11 @@ public class CourseServiceImpl implements CourseService {
         }
 
         Optional<Course> course = courseRepository.findById(id);
-        course.ifPresent(deleteCourse -> deleteCourse.setRecordState(RecordState.DELETED));
+        course.ifPresent(deleteCourse -> {
+                    deleteCourse.setRecordState(RecordState.DELETED);
+                    log.info("Course Deleted : {}", deleteCourse);
+                }
+        );
 
         return course.orElseThrow(() -> new EntityNotFoundException("Course With This ID Not Found"));
     }
@@ -130,7 +141,11 @@ public class CourseServiceImpl implements CourseService {
         }
 
         Optional<Course> course = courseRepository.findByCodeIgnoreCase(code.trim());
-        course.ifPresent(deleteCourse -> deleteCourse.setRecordState(RecordState.DELETED));
+        course.ifPresent(deleteCourse -> {
+                    deleteCourse.setRecordState(RecordState.DELETED);
+                    log.info("Course Deleted : {}", deleteCourse);
+                }
+        );
 
         return course.orElseThrow(() -> new EntityNotFoundException("Course With This ID Not Found"));
     }
