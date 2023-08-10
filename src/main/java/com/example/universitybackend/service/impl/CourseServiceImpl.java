@@ -43,7 +43,7 @@ public class CourseServiceImpl implements CourseService {
             throw new InvalidPropertyException("Id is Incorrect");
         }
         Optional<Course> course = courseRepository.findById(id);
-        course.ifPresent( courseToLog -> log.info("Fetched course : {}", courseToLog));
+        course.ifPresent(courseToLog -> log.info("Fetched course : {}", courseToLog));
         return course.orElseThrow(() -> new EntityNotFoundException("Course With This ID Not Found"));
     }
 
@@ -54,7 +54,7 @@ public class CourseServiceImpl implements CourseService {
         }
 
         Optional<Course> course = courseRepository.findByNameIgnoreCase(name.trim());
-        course.ifPresent( courseToLog -> log.info("Fetched course : {}", courseToLog));
+        course.ifPresent(courseToLog -> log.info("Fetched course : {}", courseToLog));
         return course.orElseThrow(() -> new EntityNotFoundException("Course With This Name Not Found"));
     }
 
@@ -101,7 +101,7 @@ public class CourseServiceImpl implements CourseService {
         }
 
         Optional<Course> course = courseRepository.findByCodeIgnoreCase(code.trim());
-        course.ifPresent( courseToLog -> log.info("Fetched course : {}", courseToLog));
+        course.ifPresent(courseToLog -> log.info("Fetched course : {}", courseToLog));
         return course.orElseThrow(() -> new EntityNotFoundException("Course With This ID Not Found"));
     }
 
@@ -111,7 +111,7 @@ public class CourseServiceImpl implements CourseService {
             throw new InvalidPropertyException("Course Object Is Null");
         }
         Course course = new Course(courseDto);
-        log.info("New Course Added : {}",course);
+        log.info("New Course Added : {}", course);
         return courseRepository.save(course);
     }
 
@@ -127,6 +127,7 @@ public class CourseServiceImpl implements CourseService {
         Optional<Course> course = courseRepository.findById(id);
         course.ifPresent(deleteCourse -> {
                     deleteCourse.setRecordState(RecordState.DELETED);
+                    courseRepository.save(deleteCourse);
                     log.info("Course Deleted : {}", deleteCourse);
                 }
         );

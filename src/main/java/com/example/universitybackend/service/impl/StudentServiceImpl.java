@@ -126,6 +126,7 @@ public class StudentServiceImpl implements StudentService {
         Optional<Student> student = studentRepository.findById(id);
         student.ifPresent((deleteStudent) -> {
             deleteStudent.setRecordState(RecordState.DELETED);
+            studentRepository.save(deleteStudent);
             log.info("Student Deleted : {}", deleteStudent);
         });
 

@@ -33,10 +33,18 @@ public class University extends AppEntity<Long> {
     @Column(name = "address")
     private String address;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinColumn(name = "university_id",referencedColumnName = "id")
     private Set<Course> courses;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinColumn(name = "university_id",referencedColumnName = "id")
     private Set<Student> students;
 
     public University(UniversityDto dto) {

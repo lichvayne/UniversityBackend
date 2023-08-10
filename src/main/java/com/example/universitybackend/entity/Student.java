@@ -45,7 +45,6 @@ public class Student extends AppEntity<Long>{
     private Set<Course> courses;
 
     @ManyToOne
-    @JoinColumn(name = "university_id")
     private University university;
 
     public Student(StudentDto studentDto){

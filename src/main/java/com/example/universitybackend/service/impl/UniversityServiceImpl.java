@@ -84,6 +84,7 @@ public class UniversityServiceImpl implements UniversityService {
         Optional<University> university = universityRepository.findById(id);
         university.ifPresent(deleteUniversity -> {
             deleteUniversity.setRecordState(RecordState.DELETED);
+            universityRepository.save(deleteUniversity);
             log.info("Deleted university: {}", deleteUniversity);
         });
 

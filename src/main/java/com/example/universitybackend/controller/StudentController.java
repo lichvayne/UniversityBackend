@@ -6,6 +6,7 @@ import com.example.universitybackend.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import java.util.List;
 @RequestMapping("/api/v1/student")
 @Slf4j
 @Tag(name = "Student", description = "The Student Api")
-@CrossOrigin(value = "http://localhost:63342")
+@SecurityRequirement(name = "BearerAuthentication")
 public class StudentController {
     private final StudentService studentService;
 
@@ -40,7 +41,7 @@ public class StudentController {
     @GetMapping
     public ResponseEntity<List<Student>> getStudentAll() {
         log.debug("Received request to get all student");
-        return new ResponseEntity<>(studentService.getAllStudent(), HttpStatus.OK);
+        return ResponseEntity.ok(studentService.getAllStudent());
     }
 
     @Operation(
@@ -56,7 +57,7 @@ public class StudentController {
     @GetMapping("{id}")
     public ResponseEntity<Student> getStudent(@PathVariable @Parameter(description = "Student Id") Long id) {
         log.debug("Received request to get student by id");
-        return new ResponseEntity<>(studentService.getStudent(id), HttpStatus.OK);
+        return ResponseEntity.ok(studentService.getStudent(id));
     }
 
     @Operation(
@@ -72,14 +73,14 @@ public class StudentController {
     @GetMapping("personalno/{personalNo}")
     public ResponseEntity<Student> getStudentByPersonalNo(@PathVariable @Parameter(description = "Student PersonalNo") String personalNo) {
         log.debug("Received request to get student by PersonalNo");
-        return new ResponseEntity<>(studentService.getStudentByPersonalNo(personalNo), HttpStatus.OK);
+        return ResponseEntity.ok(studentService.getStudentByPersonalNo(personalNo));
     }
 
     @Operation(
             summary = "Delete Student",
             description = "Delete Single Student By Id",
             responses = {
-                    @ApiResponse(description = "Success", responseCode = "200"),
+                    @ApiResponse(description = "No Content", responseCode = "204"),
                     @ApiResponse(description = "Unauthorized", responseCode = "403"),
                     @ApiResponse(description = "Invalid Id Supplied", responseCode = "403"),
                     @ApiResponse(description = "Student Not Found", responseCode = "404")
@@ -89,14 +90,14 @@ public class StudentController {
     public ResponseEntity<Student> deleteStudentById(@PathVariable @Parameter(description = "Student Id") Long id) {
         log.debug("Received request to delete student by id");
 
-        return new ResponseEntity<>(studentService.deleteStudent(id), HttpStatus.OK);
+        return new ResponseEntity<>(studentService.deleteStudent(id), HttpStatus.NO_CONTENT);
     }
 
     @Operation(
             summary = "Add Student",
             description = "Add Student",
             responses = {
-                    @ApiResponse(description = "Success", responseCode = "200"),
+                    @ApiResponse(description = "Created", responseCode = "201"),
                     @ApiResponse(description = "Unauthorized", responseCode = "403"),
                     @ApiResponse(description = "Invalid Object Supplied", responseCode = "403"),
                     @ApiResponse(description = "Student Not Found", responseCode = "404")
@@ -105,7 +106,7 @@ public class StudentController {
     @PostMapping
     public ResponseEntity<Student> addStudent(@RequestBody StudentDto studentDto) {
         log.debug("Received request to add student");
-        return new ResponseEntity<>(studentService.addStudent(studentDto), HttpStatus.OK);
+        return new ResponseEntity<>(studentService.addStudent(studentDto), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -126,7 +127,7 @@ public class StudentController {
                                                  @RequestParam(required = false) String address,
                                                  @RequestParam(required = false) Long courseId) {
         log.debug("Received request to update student");
-        return new ResponseEntity<>(studentService.updateStudent(id, firstName, lastName, personalNo, address,courseId), HttpStatus.OK);
+        return ResponseEntity.ok(studentService.updateStudent(id, firstName, lastName, personalNo, address,courseId));
     }
 
 }

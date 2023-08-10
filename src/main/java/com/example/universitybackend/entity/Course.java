@@ -43,6 +43,9 @@ public class Course extends AppEntity<Long> {
     private Byte credits = 6;
 
     @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "course_student",
+            joinColumns = @JoinColumn(name = "course_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id"))
     private Set<Student> students;
 
     @Column(

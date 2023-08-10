@@ -18,9 +18,9 @@ import io.swagger.v3.oas.annotations.servers.Server;
         )
 )
 @SecurityScheme(
-        name = "JWT Authentication",
-        description = "JWT Token",
-        type  = SecuritySchemeType.HTTP,
+        name = "BearerAuthentication",
+        description = "To access token you need to register and then authenticate user",
+        type = SecuritySchemeType.HTTP,
         bearerFormat = "JWT",
         scheme = "bearer",
         in = SecuritySchemeIn.HEADER
