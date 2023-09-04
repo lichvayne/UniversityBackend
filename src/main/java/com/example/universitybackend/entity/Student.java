@@ -41,10 +41,14 @@ public class Student extends AppEntity<Long>{
     @Column(name = "address")
     private String address;
 
-    @ManyToMany(cascade = CascadeType.ALL,mappedBy = "students")
+    @ManyToMany(
+            cascade = CascadeType.ALL,
+            mappedBy = "students",
+            fetch = FetchType.EAGER
+    )
     private Set<Course> courses;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private University university;
 
     public Student(StudentDto studentDto){
