@@ -1,6 +1,6 @@
 package com.example.universitybackend.entity;
 
-import com.example.universitybackend.dto.StudentDto;;
+import com.example.universitybackend.dto.StudentDto;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
